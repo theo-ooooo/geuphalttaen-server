@@ -4,7 +4,7 @@ import com.geuphalttaen.server.adapter.out.opendata.dto.PublicToiletApiResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.RestClient
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
@@ -13,7 +13,7 @@ class PublicToiletApiClient(
     private val apiKey: String,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
-    private val restTemplate = RestTemplate()
+    private val restClient = RestClient.create()
 
     companion object {
         private const val BASE_URL = "http://api.data.go.kr/openapi/tn_pubr_public_toilet_api"
@@ -25,7 +25,7 @@ class PublicToiletApiClient(
         var pageNo = 1
 
         while (true) {
-            val uri = UriComponentsBuilder.fromHttpUrl(BASE_URL)
+            val uri = UriComponentsBuilder.fromUriString(BASE_URL)
                 .queryParam("serviceKey", apiKey)
                 .queryParam("pageNo", pageNo)
                 .queryParam("numOfRows", PAGE_SIZE)
@@ -34,8 +34,8 @@ class PublicToiletApiClient(
                 .toUriString()
 
             try {
-                val response = restTemplate.getForObject(uri, PublicToiletApiResponse::class.java)
-                val items = response?.response?.body?.items ?: break
+                val result = restClient.get().uri(uri).retrieve().body(PublicToiletApiResponse::class.java)
+                val items = result?.response?.body?.items ?: break
 
                 if (items.isEmpty()) break
 
