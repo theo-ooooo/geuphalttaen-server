@@ -1,4 +1,9 @@
 spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/geuphalttaen?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: geuphalttaen
+    password: geuphalttaen
+
   jpa:
     hibernate:
       ddl-auto: update
